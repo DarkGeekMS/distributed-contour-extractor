@@ -1,32 +1,31 @@
+from config.parser import get_config_from_json
+import argparse
 import time
 import zmq
 import cv2
+import math
 
-# consumer2
-"""
+def consumer(addressReceive, addressSend):
+    """
     takes  binary image and pushes its contours to the output_node.
     Args:
         addressReceive: string of the ip address followed by the port to make the connection with collector_node.
         addressSend   : string of the ip address followed by the port to make the connection with output_node.
-
-"""
-
-def consumer2(addressReceive, addressSend):
-
+    """
     #make the connections
     context = zmq.Context()
     # receive binary image
-    consumer2_receiver = context.socket(zmq.PULL)
-    consumer2_receiver.connect(addressReceive)
+    consumer_receiver = context.socket(zmq.PULL)
+    consumer_receiver.connect(addressReceive)
     # send its contours to output_node
-    consumer2_sender = context.socket(zmq.PUSH)
-    consumer2_sender.connect(addressSend)
+    consumer_sender = context.socket(zmq.PUSH)
+    consumer_sender.connect(addressSend)
 
 
     while True:  #to be changed
 
         #receive the binary frame
-        work = consumer2_receiver.recv_pyobj()
+        work = consumer_receiver.recv_pyobj()
         data = work['binary']
 
         #get the contours
@@ -34,4 +33,20 @@ def consumer2(addressReceive, addressSend):
         result = {'contours' : contours}
 
         #send the contours
-        consumer2_sender.send_pyobj(result)
+        consumer_sender.send_pyobj(result)
+
+def main():
+    """Main driver of contour consumer node"""
+    argparser = argparse.ArgumentParser(description=__doc__)
+    argparser.add_argument('-id', '--node_id', type=int, help='id for the currently running node')
+    
+    args = argparser.parse_args()
+
+    config = get_config_from_json("front_machine/config/server.json") # get other nodes addresses from json config
+
+    recv_address = config.remote_sockets[math.floor(args.node_id/2.0)] # get the receive address based on the node id
+
+    consumer(recv_address, config.output_socket) # call the contour consumer process
+
+if __name__=='__main__':
+    main()           

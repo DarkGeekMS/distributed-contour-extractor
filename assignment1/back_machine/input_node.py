@@ -1,17 +1,16 @@
+from config.parser import get_config_from_json
+import argparse
 import time
 import zmq
 import cv2
 
-# producer
-"""
+def producer(address, videoPath):
+    """
     takes video and pushes its frame.
     Args:
         address  : string of the ip address followed by the port to make the connection with ostu_node.
         videoPath: string path to any video.
-
-"""
-def producer(address , videoPath):
-
+    """
     #make the connections
     context = zmq.Context()
     zmq_socket = context.socket(zmq.PUSH)
@@ -43,3 +42,17 @@ def producer(address , videoPath):
 
     # When everything done, release the video capture object
     cap.release()
+
+def main():
+    """Main driver of input node"""
+    argparser = argparse.ArgumentParser(description=__doc__)
+    argparser.add_argument('-v', '--video_path', type=str, help='path to the input video')
+    
+    args = argparser.parse_args()
+
+    config = get_config_from_json("back_machine/config/server.json") # get other nodes addresses from json config
+
+    producer(config.input_socket, args.video_path) # call the producer process
+
+if __name__=='__main__':
+    main()    
