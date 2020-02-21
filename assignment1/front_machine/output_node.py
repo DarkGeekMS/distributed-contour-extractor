@@ -1,4 +1,5 @@
 from config.parser import get_config_from_json
+import pandas as pd
 import argparse
 import time
 import zmq
@@ -15,8 +16,8 @@ def result_collector(address, outputPath):
     results_receiver = context.socket(zmq.PULL)
     results_receiver.bind(address)
 
-    #create an output file
-    file = open(outputPath, 'w+')
+    #create an output dictionary
+    out_dict = {"Frame Number": [], "Contours": []}
     counter = 0
 
     #receive the contours and save them in a txt file
@@ -24,14 +25,14 @@ def result_collector(address, outputPath):
         work = results_receiver.recv_pyobj()
         data = work['contours']
 
-        #save the result in output file
-        file.write("Frame #{}: \n".format(counter))
-        file.write(data)
-        file.write("\n")
-
+        #add the results to output dictionary
+        out_dict["Frame Number"].append("Frame #{}".format(counter))
+        out_dict["Contours"].append(data)
         counter += 1   
 
-    file.close()     
+        #create a dataframe and write outputs
+        out_df = pd.DataFrame(out_dict, columns=["Frame Number", "Contours"])    
+        out_df.to_csv(outputPath)   
 
 def main():
     """Main driver of output node"""

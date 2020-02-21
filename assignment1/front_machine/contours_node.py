@@ -29,7 +29,7 @@ def consumer(addressReceive, addressSend):
         data = work['binary']
 
         #get the contours
-        _, contours, _ = cv2.findContours(data, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        contours, _ = cv2.findContours(data, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         result = {'contours' : contours}
 
         #send the contours

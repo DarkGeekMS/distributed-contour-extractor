@@ -26,7 +26,7 @@ do
     python front_machine/contours_node.py --node_id $i &
 done
 
-python front_machine/output_node.py --text_path "front_machine/outputs/contours.txt" &
+python front_machine/output_node.py --text_path "front_machine/outputs/contours.csv" &
 
 else
 
