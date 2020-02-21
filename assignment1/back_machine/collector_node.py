@@ -34,8 +34,8 @@ def main():
 
     config = get_config_from_json("back_machine/config/server.json") # get other nodes addresses from json config
 
-    recv_address = config.collector_sockets[args.node_id] # get the receive address based on the node id
-    send_address = config.remote_sockets[args.node_id] # get the send address based on the node id
+    recv_address = config.collector_sockets[args.node_id-1] # get the receive address based on the node id
+    send_address = config.remote_sockets[args.node_id-1] # get the send address based on the node id
 
     collector(recv_address, send_address) # call the OSTU consumer process
 

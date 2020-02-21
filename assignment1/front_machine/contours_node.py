@@ -44,7 +44,7 @@ def main():
 
     config = get_config_from_json("front_machine/config/server.json") # get other nodes addresses from json config
 
-    recv_address = config.remote_sockets[math.floor(args.node_id/2.0)] # get the receive address based on the node id
+    recv_address = config.remote_sockets[math.floor((args.node_id-1)/2.0)] # get the receive address based on the node id
 
     consumer(recv_address, config.output_socket) # call the contour consumer process
 
