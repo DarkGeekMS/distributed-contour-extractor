@@ -5,7 +5,7 @@ import zmq
 import cv2
 import math
 
-def consumer(addressReceive, addressSend):
+def consumer(addressReceive, addressSend, numTerminate):
     """
     takes  binary image and pushes its contours to the output_node.
     Args:
@@ -21,12 +21,22 @@ def consumer(addressReceive, addressSend):
     consumer_sender = context.socket(zmq.PUSH)
     consumer_sender.connect(addressSend)
 
+    TerminationCount = 0
 
-    while True:  #to be changed
+    while True:
+
+        if TerminationCount == numTerminate:
+            msg = { 'contours' : None }
+            consumer_sender.send_pyobj(msg)
+            break
 
         #receive the binary frame
         work = consumer_receiver.recv_pyobj()
         data = work['binary']
+
+        if data == None:
+            TerminationCount +=1
+            continue
 
         #get the contours
         contours, _ = cv2.findContours(data, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -39,7 +49,7 @@ def main():
     """Main driver of contour consumer node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-id', '--node_id', type=int, help='id for the currently running node')
-    
+
     args = argparser.parse_args()
 
     config = get_config_from_json("front_machine/config/server.json") # get other nodes addresses from json config
@@ -49,4 +59,4 @@ def main():
     consumer(recv_address, config.output_socket) # call the contour consumer process
 
 if __name__=='__main__':
-    main()           
+    main()

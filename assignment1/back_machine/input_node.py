@@ -4,7 +4,7 @@ import time
 import zmq
 import cv2
 
-def producer(address, videoPath):
+def producer(address, videoPath, numTerminate):
     """
     takes video and pushes its frame.
     Args:
@@ -40,6 +40,9 @@ def producer(address, videoPath):
         else:
             break
 
+    for i in range (numTerminate):
+        work_message = { 'frame': None }
+        zmq_socket.send_pyobj(work_message)
     # When everything done, release the video capture object
     cap.release()
 
@@ -56,4 +59,4 @@ def main():
     producer(config.input_socket, args.video_path) # call the producer process
 
 if __name__=='__main__':
-    main()    
+    main()

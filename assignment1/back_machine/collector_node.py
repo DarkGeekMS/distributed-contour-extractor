@@ -3,7 +3,7 @@ import argparse
 import time
 import zmq
 
-def collector(addressReceive, addressSend):
+def collector(addressReceive, addressSend, numTerminate):
     """
     takes  binary image and pushes it to the contours_node.
     Args:
@@ -18,11 +18,20 @@ def collector(addressReceive, addressSend):
     # send the binary image to contours_node
     collector_sender = context.socket(zmq.PUSH)
     collector_sender.bind(addressSend)
+    TerminationCount = 0
 
-    while True: #same as ostu needs to be changed to terminate after the last frame
+    while True:
+
+        if TerminationCount == numTerminate:
+            msg = { 'binary' : None }
+            collector_sender.send_pyobj(msg)
+            break
 
         #get the frames from ostu node and send them to contours node
         work = collector_receiver.recv_pyobj()
+        if work['binary'] == None:
+            TerminationCount +=1
+            continue
         collector_sender.send_pyobj(work)
 
 def main():
@@ -30,7 +39,7 @@ def main():
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-id', '--node_id', type=int, help='id for the currently running node')
     argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
-    
+
     args = argparser.parse_args()
 
     config = get_config_from_json("back_machine/config/server.json") # get other nodes addresses from json config
@@ -41,4 +50,4 @@ def main():
     collector(recv_address, send_address) # call the OSTU consumer process
 
 if __name__=='__main__':
-    main()        
+    main()
