@@ -4,7 +4,7 @@ import time
 import zmq
 import cv2
 
-def producer(address, videoPath):
+def producer(address, videoPath, numTerminate):
     """
     takes video and pushes its frame.
     Args:
@@ -40,6 +40,9 @@ def producer(address, videoPath):
         else:
             break
 
+    for i in range (numTerminate):
+        work_message = { 'frame': None }
+        zmq_socket.send_pyobj(work_message)
     # When everything done, release the video capture object
     cap.release()
 
@@ -47,7 +50,7 @@ def main():
     """Main driver of input node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-v', '--video_path', type=str, help='path to the input video')
-    
+
     args = argparser.parse_args()
 
     config = get_config_from_json("back_machine/config/server.json") # get other nodes addresses from json config
@@ -55,4 +58,4 @@ def main():
     producer(config.input_socket, args.video_path) # call the producer process
 
 if __name__=='__main__':
-    main()    
+    main()
