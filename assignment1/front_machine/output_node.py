@@ -38,6 +38,7 @@ def main():
     """Main driver of output node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-t', '--text_path', type=str, help='path to the output text')
+    argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
     
     args = argparser.parse_args()
 

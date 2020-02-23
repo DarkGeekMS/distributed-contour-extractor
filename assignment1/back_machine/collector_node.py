@@ -29,6 +29,7 @@ def main():
     """Main driver of collector node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-id', '--node_id', type=int, help='id for the currently running node')
+    argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
     
     args = argparser.parse_args()
 

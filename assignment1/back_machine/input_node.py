@@ -47,6 +47,7 @@ def main():
     """Main driver of input node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-v', '--video_path', type=str, help='path to the input video')
+    argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
     
     args = argparser.parse_args()
 
