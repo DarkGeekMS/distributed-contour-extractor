@@ -1,6 +1,7 @@
 from config.parser import get_config_from_json
 import argparse
 import time
+from math import ceil
 import zmq
 
 def collector(addressReceive, addressSend, numTerminate):
@@ -9,6 +10,7 @@ def collector(addressReceive, addressSend, numTerminate):
     Args:
         addressReceive: string of the ip address followed by the port to make the connection with ostu_node.
         addressSend   : string of the ip address followed by the port to make the connection with contours_node.
+        numTerminate: number of terminates to be sent
     """
     #make the connections
     context = zmq.Context()
@@ -42,12 +44,21 @@ def main():
 
     args = argparser.parse_args()
 
+    num_terminate = 0
+    if (args.total_num % 2 == 0):
+        num_terminate = 2
+    else:
+        if (args.node_id == ceil(args.total_num/2.0)):
+            num_terminate = 1
+        else:
+            num_terminate = 2
+            
     config = get_config_from_json("back_machine/config/server.json") # get other nodes addresses from json config
 
     recv_address = config.collector_sockets[args.node_id-1] # get the receive address based on the node id
     send_address = config.remote_sockets[args.node_id-1] # get the send address based on the node id
 
-    collector(recv_address, send_address) # call the OSTU consumer process
+    collector(recv_address, send_address, num_terminate) # call the OSTU consumer process
 
 if __name__=='__main__':
     main()

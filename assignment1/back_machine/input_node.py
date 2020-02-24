@@ -8,8 +8,9 @@ def producer(address, videoPath, numTerminate):
     """
     takes video and pushes its frame.
     Args:
-        address  : string of the ip address followed by the port to make the connection with ostu_node.
-        videoPath: string path to any video.
+        address     : string of the ip address followed by the port to make the connection with ostu_node.
+        videoPath   : string path to any video.
+        numTerminate: number of terminates to be sent
     """
     #make the connections
     context = zmq.Context()
@@ -56,7 +57,7 @@ def main():
 
     config = get_config_from_json("back_machine/config/server.json") # get other nodes addresses from json config
 
-    producer(config.input_socket, args.video_path) # call the producer process
+    producer(config.input_socket, args.video_path, args.total_num) # call the producer process
 
 if __name__=='__main__':
     main()

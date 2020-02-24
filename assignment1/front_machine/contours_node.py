@@ -11,6 +11,7 @@ def consumer(addressReceive, addressSend, numTerminate):
     Args:
         addressReceive: string of the ip address followed by the port to make the connection with collector_node.
         addressSend   : string of the ip address followed by the port to make the connection with output_node.
+        numTerminate: number of terminates to be sent
     """
     #make the connections
     context = zmq.Context()
@@ -56,7 +57,7 @@ def main():
 
     recv_address = config.remote_sockets[math.floor((args.node_id-1)/2.0)] # get the receive address based on the node id
 
-    consumer(recv_address, config.output_socket) # call the contour consumer process
+    consumer(recv_address, config.output_socket, 1) # call the contour consumer process
 
 if __name__=='__main__':
     main()

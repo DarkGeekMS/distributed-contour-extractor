@@ -11,6 +11,7 @@ def consumer(addressReceive, addressSend, numTerminate):
     Args:
         addressReceive: string of the ip address followed by the port to make the connection with input_node.
         addressSend   : string of the ip address followed by the port to make the connection with collector_node.
+        numTerminate: number of terminates to be sent
     """
     #make the connections
     context = zmq.Context()
@@ -53,7 +54,7 @@ def main():
 
     send_address = config.collector_sockets[math.floor((args.node_id-1)/2.0)] # get the send address based on the node id
 
-    consumer(config.input_socket, send_address) # call the OSTU consumer process
+    consumer(config.input_socket, send_address, 1) # call the OSTU consumer process
 
 if __name__=='__main__':
     main()            

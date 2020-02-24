@@ -10,6 +10,7 @@ def result_collector(address, outputPath, numTerminate):
     Args:
         address   : string of the ip address followed by the port to make the connection with contours_node.
         outputPath: string path to the output text.
+        numTerminate: number of terminates to be sent
     """
     #make the connections
     context = zmq.Context()
@@ -53,7 +54,7 @@ def main():
 
     config = get_config_from_json("front_machine/config/server.json")   # get other nodes addresses from json config
 
-    result_collector(config.output_socket, args.text_path)              # call the output collector process
+    result_collector(config.output_socket, args.text_path, args.total_num)              # call the output collector process
 
 if __name__=='__main__':
     main()
