@@ -31,7 +31,7 @@ def result_collector(address, outputPath, numTerminate):
         work = results_receiver.recv_pyobj()
         data = work['contours']
 
-        if data == None:
+        if len(data) == 0:
             TerminationCount += 1
             continue
 
@@ -44,11 +44,14 @@ def result_collector(address, outputPath, numTerminate):
         out_df = pd.DataFrame(out_dict, columns=["Frame Number", "Contours"])
         out_df.to_csv(outputPath)
 
+    # wait for the other processes to finish    
+    time.sleep(10)    
+
 def main():
     """Main driver of output node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-t', '--text_path', type=str, help='path to the output text')
-    argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
+    argparser.add_argument('-n', '--total_num', type=int, help='total number of consumer nodes')
     
     args = argparser.parse_args()
 

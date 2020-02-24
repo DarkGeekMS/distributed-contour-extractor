@@ -27,7 +27,7 @@ def consumer(addressReceive, addressSend, numTerminate):
     while True:
 
         if TerminationCount == numTerminate:
-            msg = { 'contours' : None }
+            msg = { 'contours' : [] }
             consumer_sender.send_pyobj(msg)
             break
 
@@ -35,7 +35,7 @@ def consumer(addressReceive, addressSend, numTerminate):
         work = consumer_receiver.recv_pyobj()
         data = work['binary']
 
-        if data == None:
+        if len(data) == 0:
             TerminationCount +=1
             continue
 
@@ -45,6 +45,9 @@ def consumer(addressReceive, addressSend, numTerminate):
 
         #send the contours
         consumer_sender.send_pyobj(result)
+
+    # wait for the other processes to finish    
+    time.sleep(10)    
 
 def main():
     """Main driver of contour consumer node"""

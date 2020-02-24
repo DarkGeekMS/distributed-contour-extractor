@@ -25,22 +25,26 @@ def collector(addressReceive, addressSend, numTerminate):
     while True:
 
         if TerminationCount == numTerminate:
-            msg = { 'binary' : None }
-            collector_sender.send_pyobj(msg)
+            for i in range(numTerminate):
+                msg = { 'binary' : [] }
+                collector_sender.send_pyobj(msg)  
             break
 
         #get the frames from ostu node and send them to contours node
         work = collector_receiver.recv_pyobj()
-        if work['binary'] == None:
+        if len(work['binary']) == 0:
             TerminationCount +=1
             continue
         collector_sender.send_pyobj(work)
+
+    # wait for the other processes to finish    
+    time.sleep(10)    
 
 def main():
     """Main driver of collector node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-id', '--node_id', type=int, help='id for the currently running node')
-    argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
+    argparser.add_argument('-n', '--total_num', type=int, help='total number of consumer nodes')
 
     args = argparser.parse_args()
 
@@ -58,7 +62,7 @@ def main():
     recv_address = config.collector_sockets[args.node_id-1] # get the receive address based on the node id
     send_address = config.remote_sockets[args.node_id-1] # get the send address based on the node id
 
-    collector(recv_address, send_address, num_terminate) # call the OSTU consumer process
+    collector(recv_address, send_address, num_terminate) # call the OTSU collector process
 
 if __name__=='__main__':
     main()

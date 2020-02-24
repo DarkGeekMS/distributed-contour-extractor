@@ -42,16 +42,19 @@ def producer(address, videoPath, numTerminate):
             break
 
     for i in range (numTerminate):
-        work_message = { 'frame': None }
+        work_message = { 'frame': [] }
         zmq_socket.send_pyobj(work_message)
     # When everything done, release the video capture object
     cap.release()
+
+    # wait for the other processes to finish
+    time.sleep(10)
 
 def main():
     """Main driver of input node"""
     argparser = argparse.ArgumentParser(description=__doc__)
     argparser.add_argument('-v', '--video_path', type=str, help='path to the input video')
-    argparser.add_argument('-n', '--total_num', type=str, help='total number of consumer nodes')
+    argparser.add_argument('-n', '--total_num', type=int, help='total number of consumer nodes')
     
     args = argparser.parse_args()
 

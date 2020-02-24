@@ -26,14 +26,14 @@ def consumer(addressReceive, addressSend, numTerminate):
     while True:
 
         if TerminationCount == numTerminate:
-            msg = { 'binary' : None }
+            msg = { 'binary' : [] }
             consumer_sender.send_pyobj(msg)
             break
         #receive the frame (grayScaled)
         work = consumer_receiver.recv_pyobj()
         frame = work['frame']
 
-        if frame == None:
+        if len(frame) == 0:
             TerminationCount +=1
             continue
 
@@ -42,6 +42,9 @@ def consumer(addressReceive, addressSend, numTerminate):
         msg = {'binary' : binary}
         #push the binary result to the collector
         consumer_sender.send_pyobj(msg)
+
+    # wait for the other processes to finish    
+    time.sleep(10)    
 
 def main():
     """Main driver of ostu consumer node"""
@@ -54,7 +57,7 @@ def main():
 
     send_address = config.collector_sockets[math.floor((args.node_id-1)/2.0)] # get the send address based on the node id
 
-    consumer(config.input_socket, send_address, 1) # call the OSTU consumer process
+    consumer(config.input_socket, send_address, 1) # call the OTSU consumer process
 
 if __name__=='__main__':
     main()            
